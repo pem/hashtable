@@ -1,0 +1,294 @@
+sv-17415.txt 
+Words:           17415
+Average length:      7.32
+Min. length:         2
+Max. length:        29
+ASCII ucase:         0.54 %
+ASCII lcase:        95.01 %
+Non ASCII:           4.46 %
+Below A:             0.00 %
+
+Read: 17415 words
+Table size: 21800  80%
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+
+Empty:  11032         10010          9799          9795          9723
+Used:   10768         11790         12001         12005         12077       
+Min:        0             0             0             0       	    0       
+Max:       13             7             6             6       	    6       
+Aver.:      1.61729       1.4771        1.45113       1.45065 	    1.442
+Time:       6 s           5 s          12 s           9 s     	   10 s     
+
+E           5             4             3             2             1
+M           5             4             1             1             1
+A           5             4             3             2             1
+S           2             1             5             3             4
+           17            13            13             8             7
+
+Read: 17415 words
+Table size: 34830  50%
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:  22802	      22702         21100         21234         21144
+Used:   12028	      12128         13730         13596         13686
+Min:        0	          0             0             0             0       
+Max:       12	          8             6             5             5
+Aver.:      1.44787       1.43593       1.26839       1.28089       1.27247
+Time:       6 s	          5 s          13 s           9 s          10 s     
+
+E           5             4             1             3             2
+M           5             4             3             1             1
+A           5             4             1             3             2
+S           2             1             5             3             4
+           17            13            10            10             9
+
+
+nngs-4043.txt 
+Words:            4043
+Average length:      5.39
+Min. length:         2
+Max. length:        10
+ASCII ucase:         5.10 %
+ASCII lcase:        93.01 %
+Non ASCII:           0.00 %
+Below A:             1.89 %
+
+Read: 4043 words
+Table size: 5060  80%
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+
+Empty:   2465	       2287          2260          2280          2294
+Used:    2595	       2773          2800          2780          2766
+Min:        0	          0             0             0             0       
+Max:       14	          6             9             6             6       
+Aver.:      1.558         1.45799       1.44393       1.45432       1.46168
+Time:       5 s	          4 s           9 s           8 s           8 s     
+
+E           5             3             1             2             4
+M           5             1             4             1             1
+A           5             4             1             2             3
+S           2             1             5             3             3
+           17             9            11             8            11
+
+Read: 4043 words
+Table size: 8086
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:   5084	       4927          4889          4920          4887
+Used:    3002	       3159          3197          3166          3199       
+Min:        0	          0             0             0             0       
+Max:       14	          6             9             5             5       
+Aver.:      1.34677       1.27984       1.26462       1.27701       1.26383
+Time:       5 s	          5 s          10 s           7 s           8 s     
+
+E           5             4             2             3             1
+M           5             3             4             1             1
+A           5             4             2             3             1
+S           1             1             5             3             4
+           16            12            13            10             7
+
+
+ansi-C.txt 
+Words:              32
+Average length:      5.19
+Min. length:         2
+Max. length:         8
+ASCII ucase:         0.00 %
+ASCII lcase:       100.00 %
+Non ASCII:           0.00 %
+Below A:             0.00 %
+
+Read: 32 words
+Table size: 40
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:     19	         16            17            18            17         
+Used:      21	         24            23            22            23         
+Min:        0	          0             0             0             0         
+Max:        4	          4             3             4             3         
+Aver.:      1.52381       1.33333       1.3913        1.45455       1.3913    
+Time:       4 s	          4 s           9 s           7 s           6 s       
+
+E           5             1             2             4             2
+M           3             3             1             3             1
+A           5             1             2             4             2
+S           1             1             5             4             3
+           14             6            10            19             8
+
+Read: 32 words
+Table size: 63 (not 64!)
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:     39	         41            39            37            35       
+Used:      24	         22            24            26            28       
+Min:        0	          0             0             0             0       
+Max:        3	          4             3             3             2       
+Aver.:      1.33333       1.45455       1.33333       1.23077       1.14286 
+Time:       5 s	          4 s           8 s           6 s           7 s     
+
+E           3             5             3             2             1
+M           2             5             2             2             1
+A           3             5             3             2             1
+S           2             1             5             3             4
+           10            16            13             9             8
+
+-------------------------------------------------------------------------------
+
+Points:
+           17            13            13             8             7
+           17            13            10            10             9
+           17             9            11             8            11
+           16            12            13            10             7
+           14             6            10            19             8
+           10            16            13             9             8
+
+Place:
+            5             3             3             2             1
+            5             4             2             2             1
+            5             2             3             1             3
+            5             3             4             2             1
+            5             1             3             4             2
+            3             5             4             2             1
+
+Averages:
+Points:    15.17         11.5          11.67         10.67          8.33
+Place:      4.33          3             3             2.17          2
+H/s     3.67 milj     4.50 milj     1.94 milj     2.54 milj     2.25 milj
+
+Averages w/o speed:
+Points:    13.5          10.5           6.67          7.5           4.67
+Place:      4.5           3.67          2.17          2.5           1.5
+
+-------------------------------------------------------------------------------
+
+Overall winner (but slow): hash_string6
+Fastest (and good enough): hash_string3
+
+-------------------------------------------------------------------------------
+Note: Some degenerate when table size is 64 !
+
+ansiC-32.txt
+Read: 32 words
+Table size: 64
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:     38	         41            39            39            40       
+Used:      26	         23            25            25            24       
+Min:        0	          0             0             0             0       
+Max:        3	          3             3             2             4       
+Aver.:      1.23077       1.3913        1.28          1.28          1.33333 
+Time:       4 s	          4 s           9 s           7 s           6 s     
+
+E           1             5             2             2             4
+M           2             2             2             1             5
+A           1             5             2             2             4
+S           1             1             5             4             3
+            5            13            11             9            16
+
+-------------------------------------------------------------------------------
+Some extreme cases:
+
+The alphabet:
+
+alphabet-26.txt 
+Words:              26
+Average length:      1.00
+Min. length:         1
+Max. length:         1
+ASCII ucase:       100.00 %
+ASCII lcase:         0.00 %
+Non ASCII:           0.00 %
+Below A:             0.00 %
+
+Read: 26 words
+Table size: 33
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:      7	          7            10            14            10       
+Used:      26	         26            23            19            23       
+Min:        0	          0             0             0             0       
+Max:        1	          1             2             3             2       
+Aver.:      1             1             1.13043       1.36842       1.13043 
+Time:       2 s	          3 s           5 s           4 s           5 s     
+
+E           1             1             3             5             3
+M           1             1             3             5             3
+A           1             1             3             5             3
+S           1             2             5             3             5
+            4             5            14            18            14
+
+xxx-17576.txt 
+Words:           17576
+Average length:      3.00
+Min. length:         3
+Max. length:         3
+ASCII ucase:       100.00 %
+ASCII lcase:         0.00 %
+Non ASCII:           0.00 %
+Below A:             0.00 %
+
+Read: 17576 words
+Table size: 21970
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:  14711	      19694          7981          9834          7981       
+Used:    7259	       2276         13989         12136         13989       
+Min:        0	          0             0             0             0       
+Max:       38	          9             3             6             3       
+Aver.:      2.42127       7.72232       1.25642       1.44825       1.25642 
+Time:       4 s	          3 s           7 s           6 s           6 s     
+
+E           4             5             1             3             1
+M           5             4             1             3             1
+A           4             5             1             3             1
+S           2             1             5             3             3
+           15            15             8            12             6
+
+
+c8-10000.txt 
+Words:           10000
+Average length:      8.00
+Min. length:         8
+Max. length:         8
+ASCII ucase:        42.21 %
+ASCII lcase:        41.75 %
+Non ASCII:           0.00 %
+Below A:            14.93 %
+
+Read: 10000 words
+Table size: 12500
+
+        hash_string1  hash_string3  hash_string4   hash_string5  hash_string6
+Empty:   5653	       5628          5654           5642          5619       
+Used:    6847	       6872          6846           6858          6881       
+Min:        0	          0             0              0             0       
+Max:        7	          6             7              6             6       
+Aver.:      1.46049       1.45518       1.46071        1.45815       1.45328 
+Time:       6 s           5 s           10 s           8 s           7 s     
+
+E           4             2             5              3             1
+M           4             1             4              1             1
+A           4             2             5              3             1
+S           2             1             5              4             3
+           14             6            19             11             6
+
+Read: 10000 words
+Table size: 20000
+
+        hash_string1  hash_string3  hash_string4  hash_string5  hash_string6
+Empty:  12158	      12099         12114         12132         12157       
+Used:    7842	       7901          7886          7868          7843       
+Min:        0	          0             0             0             0       
+Max:        5	          5             6             5             5       
+Aver.:      1.27518       1.26566       1.26807       1.27097       1.27502 
+Time:       6 s           5 s           9 s           9 s           7 s     
+
+E           5             1             2             3             4
+M           1             1             5             1             1
+A           5             1             2             3             4
+S           2             1             4             4             3
+           13             4            13            11            12
+
+-------------------------------------------------------------------------------
