@@ -1,6 +1,6 @@
 /* htabtest.c
 **
-** Per-Erik Martin (per-erik.martin@telia.com) 2001-05-13
+** Per-Erik Martin (pem@pem.nu) 2001-05-13, 2009-08-12
 **
 */
 
@@ -97,6 +97,17 @@ main(int argc, char **argv)
 	   (unsigned long)icount - islots,
 	   ((double)(icount-islots)/icount)*100.0);
   }
+
+  if (0)
+  {
+      hashtable_iter_t iter;
+      char *key;
+  
+      hashtable_iter_init(h, &iter);
+      while (hashtable_iter_next(h, &iter, (void *)&key, NULL))
+          printf("%s\n", key);
+  }
+
   i = count;
   while (i--)
   {
@@ -114,5 +125,9 @@ main(int argc, char **argv)
   }
 
   hashtable_destroy(h);
+  for (i = 0 ; i < count ; i++)
+      free(a[i]);
+  free(a);
+
   exit(0);
 }

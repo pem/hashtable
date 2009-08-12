@@ -1,6 +1,6 @@
 /* hashtable.c
 **
-** Per-Erik Martin (per-erik.martin@telia.com) 2001-05-13
+** Per-Erik Martin (pem@pem.nu) 2001-05-13, 2009-08-12
 **
 */
 
@@ -121,6 +121,7 @@ datum_set_next(datum_t *dp1, datum_t *dp2)
 static int
 datum_set(datum_t *dp, const char *hkey, void *val, datum_t *nextp)
 {
+  hkey_clear(&dp->hkey);
   if (!hkey_set(&dp->hkey, hkey))
     return 0;
   dp->value = val;
@@ -135,6 +136,7 @@ datum_copy(datum_t *dp)
 
   if (dp2)
   {
+    memset(&dp2->hkey, 0, sizeof(dp2->hkey));
     if (!datum_set(dp2, hkey_key(&dp->hkey), dp->value, dp->next))
     {
       free(dp2);
@@ -205,30 +207,30 @@ datum_next(datum_t *dp)
 ** Two good string hash functions
 */
 
-unsigned long
+hashval_t
 hash_string_fast(const char *s)
 {
-  unsigned long val = 0;
+  hashval_t val = 0;
 
   while (*s)
     val += (val << 3) + *s++;
   return val;
 }
 
-#define SEED_MAX 2147483646L
+#define SEED_MAX 2147483646
 
-unsigned long
+hashval_t
 hash_string_good(const char *s)
 {
   register unsigned i;
-  unsigned long val;
+  hashval_t val;
   union
   {
-      unsigned long ul;
-      char s[sizeof(unsigned long)];
+      hashval_t ul;
+      char s[sizeof(hashval_t)];
   } u;
 
-  i = sizeof(unsigned long);
+  i = sizeof(hashval_t);
 
   /* Pack the first word */
   while (i && *s)
@@ -239,12 +241,12 @@ hash_string_good(const char *s)
     u.ul -= SEED_MAX;
 
   /* Inline coding a the minimal standard pseudo random number generator */
-#define RAND_A        16807L
-#define RAND_M   2147483647L
-#define RAND_Q       127773L	/* m div a */
-#define RAND_R         2836L	/* m mod a */
+#define RAND_A        16807
+#define RAND_M   2147483647
+#define RAND_Q       127773	/* m div a */
+#define RAND_R         2836	/* m mod a */
   {
-    register long lo, hi, test;
+    register int lo, hi, test;
 
     hi = u.ul/RAND_Q;
     lo = u.ul - hi*RAND_Q;	/* Seed mod RAND_Q */
@@ -261,7 +263,7 @@ hash_string_good(const char *s)
   /* The rest is simply xor:ed wordwise */
   while (*s)
   {
-    i = sizeof(unsigned long);
+    i = sizeof(hashval_t);
     while (i && *s)
       u.s[--i] = *s++;
     while (i)
@@ -353,8 +355,12 @@ hashtable_destroy(hashtable_t h)
       }
     }
   }
+  free(h->data);
   free(h);
 }
+
+static int
+hashtable_put_nogrow(hashtable_t h, const char *key, void *val);
 
 /* Returns 1 on sucess
 ** Returns 0 on failure
@@ -379,7 +385,7 @@ hashtable_grow(hashtable_t h)
       {
 	datum_t *nextp = datum_next(dp);
 
-	if (hashtable_put(h2, datum_key(dp), datum_value(dp)) < 0)
+	if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp)) < 0)
 	{
 	  hashtable_destroy(h2);
 	  return 0;
@@ -388,7 +394,7 @@ hashtable_grow(hashtable_t h)
 	while (dp)
 	{
 	  nextp = datum_next(dp);
-	  if (hashtable_put(h2, datum_key(dp), datum_value(dp)) < 0)
+	  if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp)) < 0)
 	  {
 	    hashtable_destroy(h2);
 	    return 0;
@@ -416,18 +422,18 @@ hashtable_find(hashtable_t h, const char *key, datum_t **dpp, datum_t **prevp)
   if (datum_is_set(dp))
   {
     datum_t *p = dp;
+    datum_t *prev = NULL;
 
-    if (prevp)
-      *prevp = NULL;
     while (p)
     {
       if (datum_comp(p, key) == 0)
       {
 	*dpp = p;
+        if (prevp)
+          *prevp = prev;
 	return 1;
       }
-      if (prevp)
-	*prevp = p;
+      prev = p;
       p = datum_next(p);
     }
   }
@@ -439,18 +445,11 @@ hashtable_find(hashtable_t h, const char *key, datum_t **dpp, datum_t **prevp)
 ** Returns  0 on success, and if key didn't exist
 ** Returns  1 on success, and if key was replaced
 */
-int
-hashtable_put(hashtable_t h, const char *key, void *val)
+static int
+hashtable_put_nogrow(hashtable_t h, const char *key, void *val)
 {
   datum_t *dp;
 
-  if (!h->hfun)
-    return -1;
-  if (((float)h->count) / h->size >= h->maxload)
-  {
-    if (!hashtable_grow(h))
-      return -1;
-  }
   if (hashtable_find(h, key, &dp, NULL))
   {				/* Found */
     if (h->dfun)
@@ -468,7 +467,7 @@ hashtable_put(hashtable_t h, const char *key, void *val)
 	return -1;
       if (!datum_set(dp, key, val, newp)) /* Set the new one,    */
       {				          /* pointing to the old */
-	free(newp);
+	datum_free(newp);
 	return -1;
       }
     }
@@ -480,6 +479,23 @@ hashtable_put(hashtable_t h, const char *key, void *val)
     h->count += 1;
   }
   return 0;
+}
+
+/* Returns -1 on failure
+** Returns  0 on success, and if key didn't exist
+** Returns  1 on success, and if key was replaced
+*/
+int
+hashtable_put(hashtable_t h, const char *key, void *val)
+{
+  if (!h->hfun)
+    return -1;
+  if (((float)h->count) / h->size >= h->maxload)
+  {
+    if (!hashtable_grow(h))
+      return -1;
+  }
+  return hashtable_put_nogrow(h, key, val);
 }
 
 /* Returns -1 if not found
@@ -507,21 +523,29 @@ hashtable_get(hashtable_t h, const char *key, void **valp)
 int
 hashtable_rem(hashtable_t h, const char *key, void **valp)
 {
-  datum_t *dp, *prevp;
+  datum_t *dp, *tmp;
 
   if (!h->hfun)
     return -1;
-  if (hashtable_find(h, key, &dp, &prevp))
+  if (hashtable_find(h, key, &dp, &tmp))
   {
     if (valp)
       *valp = datum_value(dp);	/* Return old value */
     else if (h->dfun)
       h->dfun (datum_value(dp)); /* Destroy old value */
-    if (!prevp)
+    if (!tmp)
+    {                           /* No previous pointer */
+      tmp = datum_next(dp);
       datum_clear(dp);
+      if (tmp)
+      {
+        datum_set(dp, datum_key(tmp), datum_value(tmp), datum_next(tmp));
+        datum_free(tmp);
+      }
+    }
     else
     {				/* Has a previous pointer */
-      datum_set_next(prevp, datum_next(dp));
+      datum_set_next(tmp, datum_next(dp));
       datum_free(dp);
     }
     h->count -= 1;
@@ -566,4 +590,46 @@ hashtable_info(hashtable_t h,
     if (cmaxp)
       *cmaxp = cmax;
   }
+}
+
+void
+hashtable_iter_init(hashtable_t h, hashtable_iter_t *iterp)
+{
+  iterp->i = 0;
+  iterp->p = NULL;
+}
+
+/* Returns 1 if a next value was found, with *keyp and *valuep
+** updated, when non-NULL.
+** Returns 0 when no more values are found.
+*/
+int
+hashtable_iter_next(hashtable_t h, hashtable_iter_t *iterp,
+                    const char **keyp, void **valuep)
+{
+  datum_t *dp;
+
+  if (iterp->p != NULL)
+  {
+    dp = (datum_t *)iterp->p;
+    if (keyp != NULL)
+      *keyp = datum_key(dp);
+    if (valuep != NULL)
+      *valuep = datum_value(dp);
+    iterp->p = datum_next(dp);
+    return 1;
+  }
+  while (iterp->i < h->size)
+  {
+    dp = h->data + (iterp->i)++;
+    if (! datum_is_set(dp))
+      continue;
+    if (keyp != NULL)
+      *keyp = datum_key(dp);
+    if (valuep != NULL)
+      *valuep = datum_value(dp);
+    iterp->p = datum_next(dp);
+    return 1;
+  }
+  return 0;
 }

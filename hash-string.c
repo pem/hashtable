@@ -9,9 +9,7 @@
 #include <string.h>
 #include <time.h>
 #include <limits.h>
-#ifdef __APPLE__
 #include <stdint.h>
-#endif
 
 #define BUFSIZE   128
 

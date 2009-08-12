@@ -4,14 +4,15 @@
 #
 #
 
-CC=gcc -ansi
+CC=gcc -std=c99
 
 CCOPTS=-pedantic -Wall
 
-CCDEFS=-D__EXTENSIONS__
+#CCDEFS=-D__EXTENSIONS__
+CCDEFS=-D_XOPEN_SOURCE=500
 
-#CFLAGS=-g -DDEBUG $(CCOPTS) $(CCDEFS)
-CFLAGS=-O2 -fomit-frame-pointer $(CCOPTS) $(CCDEFS)
+CFLAGS=-g -DDEBUG $(CCOPTS) $(CCDEFS)
+#CFLAGS=-O2 -fomit-frame-pointer $(CCOPTS) $(CCDEFS)
 #CFLAGS=-O2 -pg $(CCOPTS) $(CCDEFS)
 
 #LDFLAGS=-pg
