@@ -53,6 +53,8 @@ hashtable_create(size_t initsize, float minload, float maxload,
 		 hashdestfunc_t *dfun);
 /* Create with just default values */
 #define hashtable_create_default() hashtable_create(0, 0, 0, NULL, NULL)
+/* Create with default values and a destructor */
+#define hashtable_create_dest_default(D) hashtable_create(0, 0, 0, NULL, (D))
 
 /* Destroys a hashtable. If the table was created with a destructor function,
 ** it will be called for each value in the table.
