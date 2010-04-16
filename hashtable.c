@@ -328,7 +328,7 @@ hashtable_create(size_t initsize, float minload, float maxload,
 }
 
 void
-hashtable_destroy(hashtable_t h)
+hashtable_clear(hashtable_t h)
 {
   size_t i;
 
@@ -343,18 +343,26 @@ hashtable_destroy(hashtable_t h)
 
       datum_clear(dp);
       if (h->dfun)
-	h->dfun (val);
+        h->dfun (val);
       dp = nextp;
       while (dp)
       {
-	nextp = datum_next(dp);
-	if (h->dfun)
-	  h->dfun (datum_value(dp));
-	datum_free(dp);
-	dp = nextp;
+        nextp = datum_next(dp);
+        if (h->dfun)
+          h->dfun (datum_value(dp));
+        datum_free(dp);
+        dp = nextp;
       }
     }
   }
+  h->count = 0;
+  memset(h->data, 0, h->size * sizeof(datum_t));
+}
+
+void
+hashtable_destroy(hashtable_t h)
+{
+  hashtable_clear(h);
   free(h->data);
   free(h);
 }
@@ -488,7 +496,7 @@ hashtable_put_nogrow(hashtable_t h, const char *key, void *val)
 int
 hashtable_put(hashtable_t h, const char *key, void *val)
 {
-  if (!h->hfun)
+  if (!h->hfun || key == NULL || key[0] == '\0')
     return -1;
   if (((float)h->count) / h->size >= h->maxload)
   {
@@ -549,8 +557,9 @@ hashtable_rem(hashtable_t h, const char *key, void **valp)
       datum_free(dp);
     }
     h->count -= 1;
+    return 0;
   }
-  return 0;
+  return -1;
 }
 
 void

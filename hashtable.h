@@ -56,13 +56,21 @@ hashtable_create(size_t initsize, float minload, float maxload,
 /* Create with default values and a destructor */
 #define hashtable_create_dest_default(D) hashtable_create(0, 0, 0, NULL, (D))
 
+/* Clears a hashtable, but keeps the table object itself with its initial
+** settings. If the table was created with a destructor function,
+** it will be called for each value in the table.
+*/
+extern void
+hashtable_clear(hashtable_t h);
+
 /* Destroys a hashtable. If the table was created with a destructor function,
 ** it will be called for each value in the table.
 */
 extern void
 hashtable_destroy(hashtable_t h);
 
-/* Puts the key-value pair into the table.
+/* Puts the key-value pair into the table. Note that 'key' must not be
+** NULL or an empty string.
 ** Returns -1 on failure.
 ** Returns  0 on success, and if key didn't exist.
 ** Returns  1 on success, and if key was replaced.
