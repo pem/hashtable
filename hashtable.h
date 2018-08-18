@@ -4,11 +4,11 @@
 **
 */
 
-#ifndef _hashtable_h_
-#define _hashtable_h_
+#pragma once
 
 #include <stddef.h>
-#include <limits.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct hashtable_s *hashtable_t;
 
@@ -18,7 +18,7 @@ typedef struct hashtable_iter_s
     void *p;
 } hashtable_iter_t;
 
-typedef unsigned int hashval_t;
+typedef uint32_t hashval_t;
 
 /* The type for a string hash function */
 typedef hashval_t
@@ -124,13 +124,11 @@ hashtable_iter_init(hashtable_t h, hashtable_iter_t *iterp);
 
 /* Gets the next key and value from a table and iterator. 'keyp' or
 ** 'valuep' may be NULL.
-** Returns 1 when there was a next value, 0 when the end of the table
+** Returns true when there was a next value, false when the end of the table
 ** was reached. Values are returned in some arbitrary order.
 ** WARNING: Do not add or delete anything from a hashtable while an
 **          iterator is in use!
 */
-extern int
+extern bool
 hashtable_iter_next(hashtable_t h, hashtable_iter_t *iterp,
                     const char **keyp, void **valuep);
-
-#endif /* _hashtable_h_ */

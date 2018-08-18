@@ -13,6 +13,7 @@
 int
 main(int argc, char **argv)
 {
+  extern char *strdup(char *);
   size_t i, count;
   char buf[128];
   size_t size = 0;

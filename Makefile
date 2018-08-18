@@ -4,9 +4,10 @@
 #
 #
 
-CC=gcc -std=c99
+CC=gcc -std=c11
 
-CCOPTS=-pedantic -Wall
+#CCOPTS=-Wpedantic -Wall -Wextra
+CCOPTS=-Wpedantic -Wall -Wextra -Werror
 
 #CCDEFS=-D__EXTENSIONS__
 CCDEFS=-D_XOPEN_SOURCE=500

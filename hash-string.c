@@ -386,7 +386,8 @@ main(int argc, char **argv)
 	  exit(1);
 	}
       }
-      words[count] = strdup(buf);
+      words[count] = malloc(len+1);
+      strncpy(words[count], buf, len+1);
       if (words[count] == NULL)
       {
 	fprintf(stderr, "strdup(\"%s\") failed\n", buf);

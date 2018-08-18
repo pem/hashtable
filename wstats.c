@@ -11,7 +11,7 @@
 #define BUFSIZE 128
 
 int
-main(int argc, char **argv)
+main()
 {
   char buf[BUFSIZE];
   size_t lensum = 0;

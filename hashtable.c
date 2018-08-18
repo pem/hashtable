@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "hashtable.h"
 
@@ -27,6 +28,7 @@ typedef struct hkey_s
   char *strp;
 } hkey_t;
 
+/* Returns strcmp style values, e.g. -1, 0, 1 */
 static int
 hkey_comp(hkey_t *hkeyp, const char *s)
 {
@@ -39,14 +41,14 @@ hkey_comp(hkey_t *hkeyp, const char *s)
 #if USE_MACROS
 #define hkey_is_set(HP) ((HP)->strp != NULL || (HP)->str[0] != '\0')
 #else
-static int
+static bool
 hkey_is_set(hkey_t *hkeyp)
 {
   return (hkeyp->strp != NULL || hkeyp->str[0] != '\0');
 }
 #endif
 
-static int
+static bool
 hkey_set(hkey_t *hkeyp, const char *s)
 {
   int ret = 1;
@@ -60,7 +62,8 @@ hkey_set(hkey_t *hkeyp, const char *s)
   else
   {
     hkeyp->str[0] = '\0';
-    hkeyp->strp = strdup(s);
+    hkeyp->strp = (char *)malloc(len+1);
+    strncpy(hkeyp->strp, s, len+1);
     if (hkeyp->strp == NULL)
       ret = 0;
   }
@@ -118,15 +121,15 @@ datum_set_next(datum_t *dp1, datum_t *dp2)
 }
 #endif /* !USE_MACROS */
 
-static int
+static bool
 datum_set(datum_t *dp, const char *hkey, void *val, datum_t *nextp)
 {
   hkey_clear(&dp->hkey);
   if (!hkey_set(&dp->hkey, hkey))
-    return 0;
+    return false;
   dp->value = val;
   dp->next = nextp;
-  return 1;
+  return true;
 }
 
 static datum_t *
@@ -171,7 +174,7 @@ datum_free(datum_t *dp)
 #define datum_comp(DP, S) hkey_comp(&(DP)->hkey, (S))
 #define datum_next(DP)    ((DP)->next)
 #else
-static int
+static bool
 datum_is_set(datum_t *dp)
 {
   return hkey_is_set(&dp->hkey);
@@ -189,6 +192,7 @@ datum_value(datum_t *dp)
   return dp->value;
 }
 
+/* Returns strcmp style values, e.g. -1, 0, 1 */
 static int
 datum_comp(datum_t *dp, const char *s)
 {
@@ -222,7 +226,7 @@ hash_string_fast(const char *s)
 hashval_t
 hash_string_good(const char *s)
 {
-  register unsigned i;
+  register uint32_t i;
   hashval_t val;
   union
   {
@@ -246,7 +250,7 @@ hash_string_good(const char *s)
 #define RAND_Q       127773	/* m div a */
 #define RAND_R         2836	/* m mod a */
   {
-    register int lo, hi, test;
+    register int32_t lo, hi, test;
 
     hi = u.ul/RAND_Q;
     lo = u.ul - hi*RAND_Q;	/* Seed mod RAND_Q */
@@ -330,9 +334,7 @@ hashtable_create(size_t initsize, float minload, float maxload,
 void
 hashtable_clear(hashtable_t h)
 {
-  size_t i;
-
-  for (i = 0 ; i < h->size ; i++)
+  for (size_t i = 0 ; i < h->size ; i++)
   {
     datum_t *dp = h->data + i;
 
@@ -370,10 +372,10 @@ hashtable_destroy(hashtable_t h)
 static int
 hashtable_put_nogrow(hashtable_t h, const char *key, void *val);
 
-/* Returns 1 on sucess
-** Returns 0 on failure
+/* Returns true on sucess
+** Returns false on failure
 */
-static int
+static bool
 hashtable_grow(hashtable_t h)
 {
   size_t newsize = (size_t) (h->count / h->minload);
@@ -396,7 +398,7 @@ hashtable_grow(hashtable_t h)
 	if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp)) < 0)
 	{
 	  hashtable_destroy(h2);
-	  return 0;
+	  return false;
 	}
 	dp = nextp;
 	while (dp)
@@ -405,7 +407,7 @@ hashtable_grow(hashtable_t h)
 	  if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp)) < 0)
 	  {
 	    hashtable_destroy(h2);
-	    return 0;
+	    return false;
 	  }
 	  dp = nextp;
 	}
@@ -416,13 +418,13 @@ hashtable_grow(hashtable_t h)
     SWAP(h->count, h2->count, i);
     hashtable_destroy(h2);
   }
-  return 1;
+  return true;
 }
 
-/* Returns 1 if found, and *dpp pointing to the entry, *prevp pointing to prev.
-** Returns 0 if not found, and *dpp pointing the slot where it goes.
+/* Returns true if found, and *dpp pointing to the entry, *prevp pointing to prev.
+** Returns false if not found, and *dpp pointing the slot where it goes.
 */
-static int
+static bool
 hashtable_find(hashtable_t h, const char *key, datum_t **dpp, datum_t **prevp)
 {
   datum_t *dp = h->data + (h->hfun(key) % h->size);
@@ -439,14 +441,14 @@ hashtable_find(hashtable_t h, const char *key, datum_t **dpp, datum_t **prevp)
 	*dpp = p;
         if (prevp)
           *prevp = prev;
-	return 1;
+	return true;
       }
       prev = p;
       p = datum_next(p);
     }
   }
   *dpp = dp;
-  return 0;
+  return false;
 }
 
 /* Returns -1 on failure
@@ -604,15 +606,16 @@ hashtable_info(hashtable_t h,
 void
 hashtable_iter_init(hashtable_t h, hashtable_iter_t *iterp)
 {
+  (void)h;			/* Unused */
   iterp->i = 0;
   iterp->p = NULL;
 }
 
-/* Returns 1 if a next value was found, with *keyp and *valuep
+/* Returns true if a next value was found, with *keyp and *valuep
 ** updated, when non-NULL.
-** Returns 0 when no more values are found.
+** Returns false when no more values are found.
 */
-int
+bool
 hashtable_iter_next(hashtable_t h, hashtable_iter_t *iterp,
                     const char **keyp, void **valuep)
 {
@@ -626,7 +629,7 @@ hashtable_iter_next(hashtable_t h, hashtable_iter_t *iterp,
     if (valuep != NULL)
       *valuep = datum_value(dp);
     iterp->p = datum_next(dp);
-    return 1;
+    return true;
   }
   while (iterp->i < h->size)
   {
@@ -638,7 +641,7 @@ hashtable_iter_next(hashtable_t h, hashtable_iter_t *iterp,
     if (valuep != NULL)
       *valuep = datum_value(dp);
     iterp->p = datum_next(dp);
-    return 1;
+    return true;
   }
-  return 0;
+  return false;
 }
