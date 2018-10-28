@@ -7,14 +7,25 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include "hashtable.h"
+
+#define STV2DOUBLE(T) ((T)->tv_sec + (T)->tv_usec/1000000.0)
+#define STVDIFF(T1, T0) (STV2DOUBLE(T1) - STV2DOUBLE(T0))
+
+static void
+print_time(const char *s, struct timeval *t0, struct timeval *t1)
+{
+    printf("%s: %4.3f ms\n", s, 1000*STVDIFF(t1, t0));
+}
 
 int
 main(int argc, char **argv)
 {
   extern char *strdup(char *);
   size_t i, count;
+  struct timeval t0, t1;
   char buf[128];
   size_t size = 0;
   char **a = NULL;
@@ -62,6 +73,7 @@ main(int argc, char **argv)
     fprintf(stderr, "hashtable_create() failed\n");
     exit(1);
   }
+  gettimeofday(&t0, NULL);
   for (i = 0 ; i < count ; i++)
   {
       switch (hashtable_put(h, a[i], (void *)i))
@@ -76,6 +88,8 @@ main(int argc, char **argv)
 	break;
       }
   }
+  gettimeofday(&t1, NULL);
+  print_time("Insert:", &t0, &t1);
 
   {
     size_t isize, icount, islots, icmax;
@@ -110,6 +124,7 @@ main(int argc, char **argv)
   }
 
   i = count;
+  gettimeofday(&t0, NULL);
   while (i--)
   {
     size_t val;
@@ -117,13 +132,18 @@ main(int argc, char **argv)
     if (hashtable_get(h, a[i], (void **)&val) < 0)
       printf("GET: No \"%s\" found\n", a[i]);
   }
+  gettimeofday(&t1, NULL);
+  print_time("Find:  ", &t0, &t1);
 
   i = count;
+  gettimeofday(&t0, NULL);
   while (i--)
   {
     if (hashtable_rem(h, a[i], NULL) < 0)
       printf("REM: No \"%s\" found\n", a[i]);
   }
+  gettimeofday(&t1, NULL);
+  print_time("Delete:", &t0, &t1);
 
   hashtable_destroy(h);
   for (i = 0 ; i < count ; i++)
