@@ -51,7 +51,7 @@ hkey_is_set(hkey_t *hkeyp)
 static bool
 hkey_set(hkey_t *hkeyp, const char *s)
 {
-  int ret = 1;
+  bool ret = true;
   size_t len = strlen(s);
 
   if (len <= HKEY_SHORT)
@@ -63,9 +63,10 @@ hkey_set(hkey_t *hkeyp, const char *s)
   {
     hkeyp->str[0] = '\0';
     hkeyp->strp = (char *)malloc(len+1);
-    strncpy(hkeyp->strp, s, len+1);
     if (hkeyp->strp == NULL)
-      ret = 0;
+      ret = false;
+    else
+      strncpy(hkeyp->strp, s, len+1);
   }
   return ret;
 }
@@ -466,7 +467,8 @@ hashtable_put_nogrow(hashtable_t h, const char *key, void *val, void **oldvalp)
       *oldvalp = datum_value(dp); /* Return old one */
     else if (h->dfun)
       h->dfun (datum_value(dp)); /* Clear old one */
-    datum_set_value(dp, val);
+    if (!datum_set_value(dp, val))
+        return -1;
     return 1;
   }
   else
