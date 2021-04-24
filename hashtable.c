@@ -370,7 +370,7 @@ hashtable_destroy(hashtable_t h)
 }
 
 static int
-hashtable_put_nogrow(hashtable_t h, const char *key, void *val);
+hashtable_put_nogrow(hashtable_t h, const char *key, void *val, void **oldvalp);
 
 /* Returns true on sucess
 ** Returns false on failure
@@ -395,7 +395,7 @@ hashtable_grow(hashtable_t h)
       {
 	datum_t *nextp = datum_next(dp);
 
-	if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp)) < 0)
+	if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp), NULL) < 0)
 	{
 	  hashtable_destroy(h2);
 	  return false;
@@ -404,7 +404,7 @@ hashtable_grow(hashtable_t h)
 	while (dp)
 	{
 	  nextp = datum_next(dp);
-	  if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp)) < 0)
+	  if (hashtable_put_nogrow(h2, datum_key(dp), datum_value(dp), NULL) < 0)
 	  {
 	    hashtable_destroy(h2);
 	    return false;
@@ -456,13 +456,15 @@ hashtable_find(hashtable_t h, const char *key, datum_t **dpp, datum_t **prevp)
 ** Returns  1 on success, and if key was replaced
 */
 static int
-hashtable_put_nogrow(hashtable_t h, const char *key, void *val)
+hashtable_put_nogrow(hashtable_t h, const char *key, void *val, void **oldvalp)
 {
   datum_t *dp;
 
   if (hashtable_find(h, key, &dp, NULL))
   {				/* Found */
-    if (h->dfun)
+    if (oldvalp != NULL)
+      *oldvalp = datum_value(dp); /* Return old one */
+    else if (h->dfun)
       h->dfun (datum_value(dp)); /* Clear old one */
     datum_set_value(dp, val);
     return 1;
@@ -496,7 +498,7 @@ hashtable_put_nogrow(hashtable_t h, const char *key, void *val)
 ** Returns  1 on success, and if key was replaced
 */
 int
-hashtable_put(hashtable_t h, const char *key, void *val)
+hashtable_put(hashtable_t h, const char *key, void *val, void **oldvalp)
 {
   if (!h->hfun || key == NULL || key[0] == '\0')
     return -1;
@@ -505,7 +507,7 @@ hashtable_put(hashtable_t h, const char *key, void *val)
     if (!hashtable_grow(h))
       return -1;
   }
-  return hashtable_put_nogrow(h, key, val);
+  return hashtable_put_nogrow(h, key, val, oldvalp);
 }
 
 /* Returns -1 if not found

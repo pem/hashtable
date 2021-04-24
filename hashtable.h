@@ -70,13 +70,14 @@ extern void
 hashtable_destroy(hashtable_t h);
 
 /* Puts the key-value pair into the table. Note that 'key' must not be
-** NULL or an empty string.
+** NULL or an empty string. If 'oldvalp' != NULL, it's set to the old
+** value if it existed.
 ** Returns -1 on failure.
 ** Returns  0 on success, and if key didn't exist.
 ** Returns  1 on success, and if key was replaced.
 */
-extern int
-hashtable_put(hashtable_t h, const char *key, void *value);
+int
+hashtable_put(hashtable_t h, const char *key, void *val, void **oldvalp);
 
 /* Looks up the value for 'key' in the table. '*valuep' is updated
 ** unless 'valuep' is NULL.

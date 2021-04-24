@@ -76,7 +76,7 @@ main(int argc, char **argv)
   gettimeofday(&t0, NULL);
   for (i = 0 ; i < count ; i++)
   {
-      switch (hashtable_put(h, a[i], (void *)i))
+      switch (hashtable_put(h, a[i], (void *)i, NULL))
       {
       case -1:
 	fprintf(stderr, "hashtable_put(h, \"%s\", %lu) failed\n",
