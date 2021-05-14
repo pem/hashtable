@@ -504,7 +504,7 @@ hashtable_put(hashtable_t h, const char *key, void *val, void **oldvalp)
 {
   if (!h->hfun || key == NULL || key[0] == '\0')
     return -1;
-  if (((float)h->count) / h->size >= h->maxload)
+  if (((float)h->count+1) / h->size >= h->maxload)
   {
     if (!hashtable_grow(h))
       return -1;

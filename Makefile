@@ -18,7 +18,7 @@ CFLAGS=-O2 -fomit-frame-pointer $(CCOPTS) $(CCDEFS)
 
 #LDFLAGS=-pg
 
-PROG=hash-string wstats htabtest
+PROG=hash-string wstats htabtest htabunit
 
 SRC=hash-string.c wstats.c hashtable.c htabtest.c
 
@@ -31,6 +31,8 @@ hash-string:	hash-string.o
 wstats:	wstats.o
 
 htabtest:	htabtest.o hashtable.o
+
+htabunit:	htabunit.o hashtable.o
 
 clean:
 	$(RM) $(OBJ) core
