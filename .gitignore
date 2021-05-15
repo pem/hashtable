@@ -1,10 +1,7 @@
-hash-string
-hash-string.o
 hashtable.o
 htabtest
 htabtest.o
 htabunit
 htabunit.o
+libhashtable.a
 make.deps
-wstats
-wstats.o

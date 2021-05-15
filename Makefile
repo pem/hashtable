@@ -18,21 +18,24 @@ CFLAGS=-O2 -fomit-frame-pointer $(CCOPTS) $(CCDEFS)
 
 #LDFLAGS=-pg
 
-PROG=hash-string wstats htabtest htabunit
+PROG=htabtest htabunit
 
-SRC=hash-string.c wstats.c hashtable.c htabtest.c htabunit.c
+LIB=libhashtable.a
+
+SRC=hashtable.c htabtest.c htabunit.c
 
 OBJ=$(SRC:%.c=%.o)
 
-all:	$(PROG)
+all:	$(PROG) $(LIB)
 
-hash-string:	hash-string.o
+htabtest:	htabtest.o $(LIB)
 
-wstats:	wstats.o
+htabunit:	htabunit.o $(LIB)
 
-htabtest:	htabtest.o hashtable.o
-
-htabunit:	htabunit.o hashtable.o
+$(LIB):	hashtable.o
+	rm -f $(LIB)
+	$(AR) qc $(LIB) hashtable.o
+	ranlib $(LIB)
 
 clean:
 	$(RM) $(OBJ) core
