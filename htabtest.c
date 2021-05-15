@@ -27,7 +27,6 @@ print_time(const char *s, struct timeval *t0, struct timeval *t1)
 int
 main(int argc, char **argv)
 {
-  extern char *strdup(char *);
   size_t i, count;
   struct timeval t0, t1;
   char buf[128];

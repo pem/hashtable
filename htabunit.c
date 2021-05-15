@@ -44,7 +44,6 @@ perrex(const char *fmt, ...)
 int
 main()
 {
-    extern char *strdup(char *);
     int i;
     char *val;
     hashtable_t h;
@@ -179,6 +178,7 @@ main()
         perrex("Failed to replace value for %s\n", Words[0]);
     if (strcmp(val, Words[0]) != 0)
         perrex("Old value didn't match: %s != %s\n", val, Words[0]);
+    free(val);
     if (hashtable_get(h, Words[0], (void **)&val) != hashtable_ret_ok)
         perrex("Failed to get %s\n", Words[0]);
     if (strcmp(val, "123456") != 0)

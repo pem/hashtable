@@ -1,7 +1,7 @@
-This hashtable implementation in C was first written in 2001.
+An easy-to-use hash table implementation in C.
 
-It has undergone some maintenance over the years, mostly bringing it up
-to date with the evolving C standard.
+This was first written in 2001, but has undergone some maintenance over
+the years, mostly bringing it up to date with the evolving C standard.
 
 It's released under the MIT License. See LICENSE.txt.
 
@@ -27,13 +27,13 @@ Some notes:
 
 Creating a hashtable
 --------------------
-- When creating a hashtable, an initial size is required. This is used as
+- When creating a hash table, an initial size is required. This is used as
   a hint, it will not necessarily use that exact size, it might us a
   larger number. The table will of course grow when needed, but if the
   expected size is known beforehand you can avoid a number of initial
   rehashes by setting a suitable size from the start.
   The default size is 101.
-- Mininum and maximum load decides when and how to grow the table.
+- Minimum and maximum load decides when and how to grow the table.
   The defaults are 0.5 and 0.8. Minimum must be less than maximum. If
   unreasonable values are given, it will force them to the default values
   or values in the range [0.2, 1.0[.
@@ -45,17 +45,17 @@ Creating a hashtable
   You will almost always want to use default.
   You can also provide your own hash function.
 - If a deallocator is given, values are deallocated with this function when
-  removed or replaced. See below about memenry management.
+  removed or replaced. See below about memory management.
 
 Memory management
 -----------------
-- Keys are managed internally by the hashtable (allocated or stored
+- Keys are managed internally by the hash table (allocated or stored
   directly in the table), so the caller does not have to allocate space for,
   and copy, them.
-- The hashtable does NOT allocate or copy value data, is just stores the
+- The hash table does NOT allocate or copy value data, is just stores the
   pointer.
 - The caller can free removed data itself, or provide a deallocator function
-  and let the hashtable take care of this.
+  and let the hash table take care of this.
 
 Value types
 -----------

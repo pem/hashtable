@@ -10,7 +10,7 @@ CC=gcc -std=c11
 CCOPTS=-Wpedantic -Wall -Wextra -Werror
 
 #CCDEFS=-D__EXTENSIONS__
-CCDEFS=-D_XOPEN_SOURCE=500
+CCDEFS=-D_POSIX_C_SOURCE=200809L
 
 #CFLAGS=-g -DDEBUG $(CCOPTS) $(CCDEFS)
 CFLAGS=-O2 -fomit-frame-pointer $(CCOPTS) $(CCDEFS)
