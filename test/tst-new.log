@@ -1,0 +1,148 @@
+
+Fast
+
+alphabet-26.txt
+Insert: 0.017 ms
+Size:           43
+Count:          26
+Slots:          26
+Chain max:       1
+Load:            0.60
+Av. chain:       1.00
+Collisions:      0 (0.00 %)
+Find:   0.004 ms
+Delete: 0.001 ms
+
+c8-10000.txt
+Insert: 3.604 ms
+Size:        16001
+Count:       10000
+Slots:        7365
+Chain max:       5
+Load:            0.62
+Av. chain:       1.36
+Collisions:   2635 (26.35 %)
+Find:   0.351 ms
+Delete: 1.538 ms
+
+sv-17415.txt
+Insert: 5.637 ms
+Size:        27863
+Count:       17415
+Slots:       12632
+Chain max:       6
+Load:            0.63
+Av. chain:       1.38
+Collisions:   4783 (27.46 %)
+Find:   0.662 ms
+Delete: 1.851 ms
+
+ansiC-32.txt
+Insert: 0.023 ms
+Size:           53
+Count:          32
+Slots:          24
+Chain max:       3
+Load:            0.60
+Av. chain:       1.33
+Collisions:      8 (25.00 %)
+Find:   0.001 ms
+Delete: 0.002 ms
+
+nngs-4043.txt
+Insert: 0.884 ms
+Size:         6469
+Count:        4043
+Slots:        2984
+Chain max:       5
+Load:            0.62
+Av. chain:       1.35
+Collisions:   1059 (26.19 %)
+Find:   0.125 ms
+Delete: 0.286 ms
+
+xxx-17576.txt
+Insert: 4.839 ms
+Size:        28123
+Count:       17576
+Slots:        2276
+Chain max:       9
+Load:            0.62
+Av. chain:       7.72
+Collisions:  15300 (87.05 %)
+Find:   0.677 ms
+Delete: 1.778 ms
+
+Good
+
+alphabet-26.txt
+Insert: 0.012 ms
+Size:           43
+Count:          26
+Slots:          26
+Chain max:       1
+Load:            0.60
+Av. chain:       1.00
+Collisions:      0 (0.00 %)
+Find:   0.001 ms
+Delete: 0.001 ms
+
+c8-10000.txt
+Insert: 3.929 ms
+Size:        16001
+Count:       10000
+Slots:        7479
+Chain max:       6
+Load:            0.62
+Av. chain:       1.34
+Collisions:   2521 (25.21 %)
+Find:   0.591 ms
+Delete: 1.685 ms
+
+sv-17415.txt
+Insert: 5.471 ms
+Size:        27863
+Count:       17415
+Slots:       12896
+Chain max:       6
+Load:            0.63
+Av. chain:       1.35
+Collisions:   4519 (25.95 %)
+Find:   1.105 ms
+Delete: 2.016 ms
+
+ansiC-32.txt
+Insert: 0.021 ms
+Size:           53
+Count:          32
+Slots:          25
+Chain max:       3
+Load:            0.60
+Av. chain:       1.28
+Collisions:      7 (21.88 %)
+Find:   0.001 ms
+Delete: 0.003 ms
+
+nngs-4043.txt
+Insert: 0.963 ms
+Size:         6469
+Count:        4043
+Slots:        3010
+Chain max:       5
+Load:            0.62
+Av. chain:       1.34
+Collisions:   1033 (25.55 %)
+Find:   0.182 ms
+Delete: 0.339 ms
+
+xxx-17576.txt
+Insert: 3.469 ms
+Size:        28123
+Count:       17576
+Slots:       16563
+Chain max:       2
+Load:            0.62
+Av. chain:       1.06
+Collisions:   1013 (5.76 %)
+Find:   0.739 ms
+Delete: 0.873 ms

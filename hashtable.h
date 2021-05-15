@@ -1,6 +1,6 @@
 /* hashtable.h
 **
-** Per-Erik Martin (pem@pem.nu) 2001-05-13, 2009-08-12
+** pem  2001-05-13, 2009-08-12
 **
 */
 
@@ -19,6 +19,14 @@ typedef struct hashtable_iter_s
 } hashtable_iter_t;
 
 typedef uint32_t hashval_t;
+
+typedef enum hashtable_ret_e
+  {
+   hashtable_ret_error,         /* Probably out of memory */
+   hashtable_ret_ok,
+   hashtable_ret_replaced,
+   hashtable_ret_not_found
+  } hashtable_ret_t;
 
 /* The type for a string hash function */
 typedef hashval_t
@@ -72,19 +80,19 @@ hashtable_destroy(hashtable_t h);
 /* Puts the key-value pair into the table. Note that 'key' must not be
 ** NULL or an empty string. If 'oldvalp' != NULL, it's set to the old
 ** value if it existed.
-** Returns -1 on failure.
-** Returns  0 on success, and if key didn't exist.
-** Returns  1 on success, and if key was replaced.
+** Returns hashtable_ret_error on failure.
+** Returns hashtable_ret_ok on success, and if key didn't exist.
+** Returns hashtable_ret_replaced on success, and if key was replaced.
 */
-int
+hashtable_ret_t
 hashtable_put(hashtable_t h, const char *key, void *val, void **oldvalp);
 
 /* Looks up the value for 'key' in the table. '*valuep' is updated
 ** unless 'valuep' is NULL.
-** Returns -1 if not found
-** Returns  0 if found, and '*valuep' updated to value.
+** Returns hashtable_ret_not_found if not found
+** Returns hashtable_ret_ok if found, and '*valuep' updated to value.
 */
-extern int
+hashtable_ret_t
 hashtable_get(hashtable_t h, const char *key, void **valuep);
 
 /* Removes the 'key' (and its value of course) from the table.
@@ -92,10 +100,10 @@ hashtable_get(hashtable_t h, const char *key, void **valuep);
 ** the destructor is not called even if there is one.
 ** If 'valuep' is NULL, the destructor is called if the table
 ** was created with one.
-** Returns -1 if not found
-** Returns  0 if removed
+** Returns hashtable_ret_not_found if not found
+** Returns hashtable_ret_ok if removed
 */
-extern int
+hashtable_ret_t
 hashtable_rem(hashtable_t h, const char *key, void **valuep);
 
 /* Returns some info about a hashtable.

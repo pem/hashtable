@@ -1,7 +1,11 @@
 /* htabtest.c
 **
-** Per-Erik Martin (pem@pem.nu) 2001-05-13, 2009-08-12
+** pem 2001-05-13, 2009-08-12, 2021-05-14
 **
+** Reads lines from standar input and puts them into a an array.
+** The times the time it takes to put them into a hashtable,
+** lookup each one, and then remove them all, from the table.
+** Also prints some statistics about the table.
 */
 
 #include <stdlib.h>
@@ -17,7 +21,7 @@
 static void
 print_time(const char *s, struct timeval *t0, struct timeval *t1)
 {
-    printf("%s: %4.3f ms\n", s, 1000*STVDIFF(t1, t0));
+    printf("%s %4.3f ms\n", s, 1000*STVDIFF(t1, t0));
 }
 
 int
@@ -78,14 +82,16 @@ main(int argc, char **argv)
   {
       switch (hashtable_put(h, a[i], (void *)i, NULL))
       {
-      case -1:
+      case hashtable_ret_error:
 	fprintf(stderr, "hashtable_put(h, \"%s\", %lu) failed\n",
 		a[i], (unsigned long)i);
 	exit(1);
-      case 1:
+      case hashtable_ret_replaced:
 	printf("PUT: Replaced key: \"%s\" - %lu\n",
 	       a[i], (unsigned long)i);
 	break;
+      default:
+        break;
       }
   }
   gettimeofday(&t1, NULL);
@@ -129,7 +135,7 @@ main(int argc, char **argv)
   {
     size_t val;
 
-    if (hashtable_get(h, a[i], (void **)&val) < 0)
+    if (hashtable_get(h, a[i], (void **)&val) == hashtable_ret_not_found)
       printf("GET: No \"%s\" found\n", a[i]);
   }
   gettimeofday(&t1, NULL);
@@ -139,7 +145,7 @@ main(int argc, char **argv)
   gettimeofday(&t0, NULL);
   while (i--)
   {
-    if (hashtable_rem(h, a[i], NULL) < 0)
+    if (hashtable_rem(h, a[i], NULL) == hashtable_ret_not_found)
       printf("REM: No \"%s\" found\n", a[i]);
   }
   gettimeofday(&t1, NULL);

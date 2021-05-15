@@ -1,6 +1,6 @@
 /* wstats.c
 **
-** Per-Erik Martin (per-erik.martin@telia.com) 2001-05-12
+** pem 2001-05-12
 **
 */
 

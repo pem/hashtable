@@ -46,14 +46,14 @@ main()
     printf("### New table, FAST hash function, min load 0.5, max load 0.8\n");
     print_info(h);
     for (i = 0 ; i < 8 && Words[i] != NULL ; i++)
-        if (hashtable_put(h, Words[i], Words[i], NULL) < 0)
+        if (hashtable_put(h, Words[i], Words[i], NULL) != hashtable_ret_ok)
         {
             fprintf(stderr, "Failed to put key %s\n", Words[i]);
             exit(1);
         }
     printf("### %d words in table\n", i);
     print_info(h);
-    if (hashtable_put(h, Words[i], Words[i], NULL) < 0)
+    if (hashtable_put(h, Words[i], Words[i], NULL) != hashtable_ret_ok)
     {
         fprintf(stderr, "Failed to put key %s\n", Words[i]);
         exit(1);
@@ -65,7 +65,7 @@ main()
 
     for (int j = 0 ; j < i && Words[j] != NULL ; j++)
     {
-        if (hashtable_rem(h, Words[j], (void **)&val) < 0)
+        if (hashtable_rem(h, Words[j], (void **)&val) != hashtable_ret_ok)
         {
             fprintf(stderr, "Failed to remove key %s\n", Words[j]);
             exit(1);
@@ -92,14 +92,14 @@ main()
     printf("### New table, GOOD hash function, min load 0.2, max load 0.9\n");
     print_info(h);
     for (i = 0 ; i < 9 && Words[i] != NULL ; i++)
-        if (hashtable_put(h, Words[i], Words[i], NULL) < 0)
+        if (hashtable_put(h, Words[i], Words[i], NULL) != hashtable_ret_ok)
         {
             fprintf(stderr, "Failed to put key %s\n", Words[i]);
             exit(1);
         }
     printf("### %d words in table\n", i);
     print_info(h);
-    if (hashtable_put(h, Words[i], Words[i], NULL) < 0)
+    if (hashtable_put(h, Words[i], Words[i], NULL) != hashtable_ret_ok)
     {
         fprintf(stderr, "Failed to put key %s\n", Words[i]);
         exit(1);
@@ -111,7 +111,7 @@ main()
 
     for (int j = 0 ; j < i && Words[j] != NULL ; j++)
     {
-        if (hashtable_get(h, Words[j], (void **)&val) < 0)
+        if (hashtable_get(h, Words[j], (void **)&val) != hashtable_ret_ok)
         {
             fprintf(stderr, "Failed to get key %s\n", Words[j]);
             exit(1);
@@ -147,5 +147,8 @@ main()
     putchar('\n');
 
     hashtable_destroy(h);
+
+    printf("Ok\n");
+
     exit(0);
 }

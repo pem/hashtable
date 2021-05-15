@@ -1,6 +1,6 @@
 # Makefile
 #
-# Per-Erik Martin (pmartin@rsasecurity.com) 2001-05-12
+# pem 2001-05-12
 #
 #
 
@@ -20,7 +20,7 @@ CFLAGS=-O2 -fomit-frame-pointer $(CCOPTS) $(CCDEFS)
 
 PROG=hash-string wstats htabtest htabunit
 
-SRC=hash-string.c wstats.c hashtable.c htabtest.c
+SRC=hash-string.c wstats.c hashtable.c htabtest.c htabunit.c
 
 OBJ=$(SRC:%.c=%.o)
 

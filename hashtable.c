@@ -1,6 +1,6 @@
 /* hashtable.c
 **
-** Per-Erik Martin (pem@pem.nu) 2001-05-13, 2009-08-12
+** pem 2001-05-13, 2009-08-12
 **
 */
 
@@ -227,7 +227,7 @@ hash_string_fast(const char *s)
 hashval_t
 hash_string_good(const char *s)
 {
-  register uint32_t i;
+  uint32_t i;
   hashval_t val;
   union
   {
@@ -235,13 +235,12 @@ hash_string_good(const char *s)
       char s[sizeof(hashval_t)];
   } u;
 
-  i = sizeof(hashval_t);
-
   /* Pack the first word */
-  while (i && *s)
-    u.s[--i] = *s++;
-  while (i)
-    u.s[--i] = '\0';		/* Pad if necessary */
+  i = 0;
+  while (i < sizeof(u.s) && *s)
+    u.s[i++] = *s++;
+  while (i < sizeof(u.s))
+    u.s[i++] = '\0';		/* Pad if necessary */
   if (u.ul > SEED_MAX)
     u.ul -= SEED_MAX;
 
@@ -268,11 +267,11 @@ hash_string_good(const char *s)
   /* The rest is simply xor:ed wordwise */
   while (*s)
   {
-    i = sizeof(hashval_t);
-    while (i && *s)
-      u.s[--i] = *s++;
-    while (i)
-      u.s[--i] = '\0';
+    i = 0;
+    while (i < sizeof(u.s) && *s)
+      u.s[i++] = *s++;
+    while (i < sizeof(u.s))
+      u.s[i++] = '\0';
     val ^= u.ul;
   }
 
@@ -307,9 +306,9 @@ hashtable_create(size_t initsize, float minload, float maxload,
     if (initsize == 0)
       initsize = 101;
     initsize |= 1;		/* Make it odd, it helps some hash functions */
-    if (maxload <= 0.5 || 1.0 <= maxload)
+    if (maxload < 0.5 || 1.0 <= maxload)
       maxload = 0.8;
-    if (minload <= 0.2 || maxload <= minload)
+    if (minload < 0.2 || maxload <= minload)
       minload = 0.5;
     if (minload >= maxload)
       minload = maxload / 2;
@@ -370,7 +369,7 @@ hashtable_destroy(hashtable_t h)
   free(h);
 }
 
-static int
+static hashtable_ret_t
 hashtable_put_nogrow(hashtable_t h, const char *key, void *val, void **oldvalp);
 
 /* Returns true on sucess
@@ -452,11 +451,11 @@ hashtable_find(hashtable_t h, const char *key, datum_t **dpp, datum_t **prevp)
   return false;
 }
 
-/* Returns -1 on failure
-** Returns  0 on success, and if key didn't exist
-** Returns  1 on success, and if key was replaced
+/* Returns hashtable_ret_error on failure.
+** Returns hashtable_ret_ok on success, and if key didn't exist.
+** Returns hashtable_ret_replaced on success, and if key was replaced.
 */
-static int
+static hashtable_ret_t
 hashtable_put_nogrow(hashtable_t h, const char *key, void *val, void **oldvalp)
 {
   datum_t *dp;
@@ -468,8 +467,8 @@ hashtable_put_nogrow(hashtable_t h, const char *key, void *val, void **oldvalp)
     else if (h->dfun)
       h->dfun (datum_value(dp)); /* Clear old one */
     if (!datum_set_value(dp, val))
-        return -1;
-    return 1;
+        return hashtable_ret_error;
+    return hashtable_ret_replaced;
   }
   else
   {				/* Not found */
@@ -478,69 +477,65 @@ hashtable_put_nogrow(hashtable_t h, const char *key, void *val, void **oldvalp)
       datum_t *newp = datum_copy(dp); /* Copy the old one */
 
       if (!newp)
-	return -1;
+	return hashtable_ret_error;
       if (!datum_set(dp, key, val, newp)) /* Set the new one,    */
       {				          /* pointing to the old */
 	datum_free(newp);
-	return -1;
+	return hashtable_ret_error;
       }
     }
     else
     {				/* Just smack it into this slot */
       if (!datum_set(dp, key, val, NULL))
-	return -1;
+	return hashtable_ret_error;
     }
     h->count += 1;
   }
-  return 0;
+   return hashtable_ret_ok;
 }
 
-/* Returns -1 on failure
-** Returns  0 on success, and if key didn't exist
-** Returns  1 on success, and if key was replaced
+/* Returns hashtable_ret_error on failure.
+** Returns hashtable_ret_ok on success, and if key didn't exist.
+** Returns hashtable_ret_replaced on success, and if key was replaced.
 */
-int
+hashtable_ret_t
 hashtable_put(hashtable_t h, const char *key, void *val, void **oldvalp)
 {
-  if (!h->hfun || key == NULL || key[0] == '\0')
-    return -1;
+  if (key == NULL || key[0] == '\0')
+    return hashtable_ret_error;
   if (((float)h->count+1) / h->size >= h->maxload)
   {
     if (!hashtable_grow(h))
-      return -1;
+      return hashtable_ret_error;
   }
   return hashtable_put_nogrow(h, key, val, oldvalp);
 }
 
-/* Returns -1 if not found
-** Returns  0 if found, and *valp updated to value.
+/* Returns hashtable_ret_not_found if not found
+** Returns hashtable_ret_ok if found, and '*valuep' updated to value.
 */
-int
+hashtable_ret_t
 hashtable_get(hashtable_t h, const char *key, void **valp)
 {
   datum_t *dp;
 
-  if (!h->hfun)
-    return -1;
   if (hashtable_find(h, key, &dp, NULL))
   {
     if (valp)
       *valp = datum_value(dp);
-    return 0;
+    return hashtable_ret_ok;
   }
-  return -1;
+  return hashtable_ret_not_found;
 }
 
-/* Returns -1 if not found
-** Returns  0 if removed
+/* Returns hashtable_ret_not_found if not found
+** Returns hashtable_ret_ok if removed
 */
-int
+hashtable_ret_t
 hashtable_rem(hashtable_t h, const char *key, void **valp)
 {
   datum_t *dp, *tmp;
 
-  if (!h->hfun)
-    return -1;
   if (hashtable_find(h, key, &dp, &tmp))
   {
     if (valp)
@@ -563,9 +558,9 @@ hashtable_rem(hashtable_t h, const char *key, void **valp)
       datum_free(dp);
     }
     h->count -= 1;
-    return 0;
+    return hashtable_ret_ok;
   }
-  return -1;
+  return hashtable_ret_not_found;
 }
 
 void

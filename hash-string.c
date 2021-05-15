@@ -1,6 +1,6 @@
 /* hash-string.c
 **
-** Per-Erik Martin (per-erik.martin@telia.com) 2001-05-11
+** pem 2001-05-11
 **
 */
 
